@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  passwordHash    String
+  name            String
+  specialty       String?
+  zone            String?
+  about           String?
+  phone           String?
+  slug            String   @unique
+  siret           String?
+  assurance       String?
+  legalDefault    String?
+  paymentDefault  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  clients     Client[]
+  quotes      Quote[]
+  resetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Client {
+  id        String    @id @default(cuid())
+  userId    String
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  user   User    @relation(fields: [userId], references: [id])
+  quotes Quote[]
+}
+
+model Quote {
+  id                String      @id @default(cuid())
+  userId            String
+  clientId          String
+  number            String
+  title             String      @default("")
+  introNote         String?
+  paymentConditions String?
+  legalText         String?
+  status            QuoteStatus @default(DRAFT)
+  token             String      @unique @default(cuid())
+  pdfUrl            String?
+  resendMessageId   String?
+  sentAt            DateTime?
+  consultedAt       DateTime?
+  decidedAt         DateTime?
+  decidedByName     String?
+  validUntil        DateTime
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  deletedAt         DateTime?
+
+  user   User        @relation(fields: [userId], references: [id])
+  client Client      @relation(fields: [clientId], references: [id])
+  lines  QuoteLine[]
+
+  @@unique([userId, number])
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REFUSED
+}
+
+model QuoteLine {
+  id          String  @id @default(cuid())
+  quoteId     String
+  position    Int
+  description String  @default("")
+  quantity    Decimal @default(1)
+  unit        String  @default("forfait")
+  unitPriceHt Decimal @default(0)
+  tvaRate     Decimal @default(10)
+
+  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId, position])
+}
