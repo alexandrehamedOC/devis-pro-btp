@@ -1,0 +1,61 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* Brouillon */
+.draft {
+  background-color: var(--surface-alt);
+  color: var(--ink-muted);
+}
+
+/* Envoyé */
+.sent {
+  background-color: var(--warning-light);
+  color: var(--warning);
+}
+
+/* Consulté (avec dot pulsant) */
+.viewed {
+  background-color: var(--warning-light);
+  color: var(--warning);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+/* Accepté */
+.accepted {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+
+/* Refusé */
+.refused {
+  background-color: var(--error-light);
+  color: var(--error);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    animation: none;
+  }
+}
